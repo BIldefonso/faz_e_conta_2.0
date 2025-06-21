@@ -323,3 +323,9 @@ class CuidadoEspecial(models.Model):
 
     def __str__(self):
         return f"{self.problema}"
+    
+class EscalaoRendimento(models.Model):
+    escal_rend_id = models.AutoField(primary_key=True)
+    rend_per_capita = models.IntegerField()
+    escalao = models.CharField(max_length=255)
+    comparticipacao_da_familia = models.IntegerField()

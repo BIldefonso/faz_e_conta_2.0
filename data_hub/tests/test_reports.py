@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 
 # python
 
-from .reports.functions import (
+from data_hub.reports.functions import (
     calcular_total_mensalidades,
     calcular_mensalidades_por_valencia,
     calcular_total_mensalidades_ss,

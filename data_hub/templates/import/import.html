@@ -5,7 +5,16 @@
 {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Upload</button>
+    {{ form.file.label_tag }} {{ form.file }}
+    <br>
+    <label for="model">Choose model/table:</label>
+    <select name="model" id="model" required>
+        <option value="">-- Select --</option>
+        {% for name in model_names %}
+        <option value="{{ name }}" {% if selected_model == name %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <button type="submit">Preview</button>
 </form>
 {% endblock %}

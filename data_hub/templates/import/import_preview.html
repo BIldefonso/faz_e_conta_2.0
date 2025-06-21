@@ -5,7 +5,9 @@
 <form method="post">
     {% csrf_token %}
     <input type="hidden" name="confirm" value="1">
-    {{ form.as_p }}
+    <input type="hidden" name="model" value="{{ selected_model }}">
+    <input type="hidden" name="data_json" value='{{ data_json|safe }}'>
+    {{ form.replace.label_tag }} {{ form.replace }}
     <table border="1">
         <tr>
             <th>Select</th>
@@ -19,5 +21,6 @@
         {% endfor %}
     </table>
     <button type="submit">Import</button>
+    <a href="{% url 'import_data' %}" class="button" style="margin-left:10px;">Cancelar</a>
 </form>
 {% endblock %}

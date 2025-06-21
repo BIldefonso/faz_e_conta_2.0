@@ -17,7 +17,8 @@
         padding-top: 60px;
     }
 
-    .sidebar a, .dropdown-btn {
+    .sidebar a,
+    .dropdown-btn {
         padding: 10px 15px;
         text-decoration: none;
         font-size: 18px;
@@ -31,7 +32,8 @@
         cursor: pointer;
     }
 
-    .sidebar a:hover, .dropdown-btn:hover {
+    .sidebar a:hover,
+    .dropdown-btn:hover {
         background-color: #575757;
     }
 
@@ -43,7 +45,8 @@
         margin-left: 50px;
     }
 
-<<<<<<< HEAD
+    /*<<<<<<< HEAD*/
+
     /* Estilos para o botão de abrir a barra lateral */
     .openbtn {
         font-size: 20px;
@@ -53,10 +56,10 @@
         border: none;
         padding: 5px 10px;
         /* Reduzido para ajustar ao tamanho do conteúdo */
-=======
+    }
+
     .dropdown {
         position: relative;
->>>>>>> b0500e5a29851204fb897969694ab2f212273fe8
     }
 
     .dropdown-container {
@@ -73,6 +76,7 @@
     .dropdown:hover .dropdown-container {
         display: block;
     }
+
     .dropdown .dropdown-container a {
         width: 100%;
         text-align: center;
@@ -87,22 +91,24 @@
         z-index: 2000;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
+
     .dropdown-submenu .dropdown-container {
         display: none;
         position: absolute;
         left: 100%;
         top: 0;
         background-color: #262626;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         z-index: 2100;
         min-width: 160px;
 
     }
-    .dropdown-submenu:hover > .dropdown-container {
+
+    .dropdown-submenu:hover>.dropdown-container {
         display: block;
-        
+
     }
-    
+
     .dropdown-container .dropdown-btn {
         padding: 10px 15px;
         width: 100%;
@@ -120,7 +126,8 @@
             padding-top: 0;
         }
 
-        .sidebar a, .dropdown-btn {
+        .sidebar a,
+        .dropdown-btn {
             display: inline-block;
             padding: 10px 20px;
             width: auto;
@@ -144,35 +151,32 @@
 
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" style="display: none;">×</a>
-<<<<<<< HEAD
-    <script>
-        if (window.innerWidth < 768) {
-            document.querySelector('.closebtn').style.display = 'block';
-        }
-    </script>
-    <a href="{% url 'index' %}">Dashboard</a>
+    <<<<<<< HEAD <script>
+        if (window.innerWidth < 768) { document.querySelector('.closebtn').style.display='block' ; } </script>
+            <a href="{% url 'index' %}">Dashboard</a>
 
-    {% if user.is_staff %}
-    <a href="{% url 'reports' %}">Reports</a>
-    <a href="{% url 'alunos' %}">Alunos</a>
-    <a href="{% url 'user_management' %}">User Management</a>
-    <a href="{% url 'import_data' %}">Import Data</a>
-    {% endif %}
-=======
->>>>>>> b0500e5a29851204fb897969694ab2f212273fe8
+            {% if user.is_staff %}
+            <a href="{% url 'reports' %}">Reports</a>
+            <a href="{% url 'alunos' %}">Alunos</a>
+            <a href="{% url 'user_management' %}">User Management</a>
+            <a href="{% url 'import_data' %}">Import Data</a>
+            {% endif %}
+            =======
+            >>>>>>> b0500e5a29851204fb897969694ab2f212273fe8
 
-    <a href="{% url 'index' %}">Dashboard</a>
+            <a href="{% url 'index' %}">Dashboard</a>
 
-    {% if user.is_staff %}
-{% comment %} 
-    Alunos
-{% endcomment %}
-        {% if user.is_superuser or perms.auth.grupo_alunos %}
+            {% if user.is_staff %}
+            {% comment %}
+            Alunos
+            {% endcomment %}
+            {% if user.is_superuser or perms.auth.grupo_alunos %}
             <div class="dropdown">
                 <span class="dropdown-btn">Alunos ▼</span>
                 <div class="dropdown-container">
                     <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Alunos =></span>
+                        <span class="dropdown-btn" onmouseover="openSubmenu(this)"
+                            onmouseout="closeSubmenu(this)">Alunos =></span>
                         <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
                             <a href="/admin/data_hub/aluno/">Alunos</a>
                             <a href="/admin/data_hub/aluno/add/">Adicionar Aluno</a>
@@ -180,16 +184,17 @@
                     </div>
                 </div>
             </div>
-        {% endif %}
-{% comment %} 
-    Financas
-{% endcomment %}
-        {% if user.is_superuser or perms.auth.grupo_financas %}
+            {% endif %}
+            {% comment %}
+            Financas
+            {% endcomment %}
+            {% if user.is_superuser or perms.auth.grupo_financas %}
             <div class="dropdown">
                 <span class="dropdown-btn">Finanças ▼</span>
                 <div class="dropdown-container">
                     <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Dívidas =></span>
+                        <span class="dropdown-btn" onmouseover="openSubmenu(this)"
+                            onmouseout="closeSubmenu(this)">Dívidas =></span>
                         <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
                             <a href="/admin/data_hub/divida/">Dívidas</a>
                             <a href="/admin/data_hub/divida/add/">Adicionar Dívida</a>
@@ -198,34 +203,37 @@
                     <a href="{% url 'reports' %}">Reports</a>
                 </div>
             </div>
-        {% endif %}
+            {% endif %}
 
-{% comment %} 
-    Admin 
-{% endcomment %}
-        {% if user.is_superuser or perms.auth.grupo_admin %}
+            {% comment %}
+            Admin
+            {% endcomment %}
+            {% if user.is_superuser or perms.auth.grupo_admin %}
             <div class="dropdown">
                 <span class="dropdown-btn">Admin ▼</span>
-                <div class="dropdown-container"> 
-{% comment %}-------------------{% endcomment %}
+                <div class="dropdown-container">
+                    {% comment %}-------------------{% endcomment %}
                     <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Utilizadores =></span>
+                        <span class="dropdown-btn" onmouseover="openSubmenu(this)"
+                            onmouseout="closeSubmenu(this)">Utilizadores =></span>
                         <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
                             <a href="{% url 'admin:auth_user_changelist' %}">Utilizadores</a>
                             <a href="{% url 'admin:auth_user_add' %}">Adicionar Utilizadores</a>
                         </div>
                     </div>
-{% comment %}-------------------{% endcomment %}
+                    {% comment %}-------------------{% endcomment %}
                     <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Grupos =></span>
+                        <span class="dropdown-btn" onmouseover="openSubmenu(this)"
+                            onmouseout="closeSubmenu(this)">Grupos =></span>
                         <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
                             <a href="{% url 'admin:auth_group_changelist' %}">Groups</a>
                             <a href="{% url 'admin:auth_group_add' %}">Adicionar Grupo</a>
                         </div>
                     </div>
-{% comment %}-------------------{% endcomment %}
+                    {% comment %}-------------------{% endcomment %}
                     <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Permições =></span>
+                        <span class="dropdown-btn" onmouseover="openSubmenu(this)"
+                            onmouseout="closeSubmenu(this)">Permições =></span>
                         <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
                             <a href="{% url 'admin:auth_permission_changelist' %}">Permições</a>
                             <a href="{% url 'admin:auth_permission_add' %}">Adicionar Permissão</a>
@@ -233,14 +241,15 @@
                     </div>
                 </div>
             </div>
-        {% endif %}
+            {% endif %}
 
-    {% endif %}
-    
-    <span style="color: white; margin-left: auto; display: inline-block; vertical-align: middle; font-size: 18px; padding: 10px 15px;">
-        {{ user.username }}
-    </span>
-    <a href="{% url 'logout' %}">Logout</a>
+            {% endif %}
+
+            <span
+                style="color: white; margin-left: auto; display: inline-block; vertical-align: middle; font-size: 18px; padding: 10px 15px;">
+                {{ user.username }}
+            </span>
+            <a href="{% url 'logout' %}">Logout</a>
 </div>
 
 <script>
@@ -262,11 +271,11 @@
         el.nextElementSibling.style.display = 'none';
     }
     // Optional: keep submenu open while hovering submenu
-    document.querySelectorAll('.dropdown-submenu').forEach(function(submenu) {
-        submenu.addEventListener('mouseover', function() {
+    document.querySelectorAll('.dropdown-submenu').forEach(function (submenu) {
+        submenu.addEventListener('mouseover', function () {
             submenu.querySelector('.dropdown-container').style.display = 'block';
         });
-        submenu.addEventListener('mouseout', function() {
+        submenu.addEventListener('mouseout', function () {
             submenu.querySelector('.dropdown-container').style.display = 'none';
         });
     });

@@ -103,41 +103,66 @@ def galeria(request):
     }
     return render(request, 'testes/galeria.html', content)
 
-@login_required(login_url=login_url)
+@login_required(login_url='login')
 def import_data(request):
     error = None
     preview = None
+    model_names = [model.__name__ for model in apps.get_app_config('data_hub').get_models()]
+
     if request.method == 'POST':
         form = ImportFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            f = request.FILES['file']
-            ext = f.name.split('.')[-1].lower()
-            if ext not in ['csv', 'json']:
-                error = 'Invalid file extension. Only CSV or JSON allowed.'
-            else:
-                # Read data
-                if ext == 'csv':
-                    decoded = f.read().decode('utf-8').splitlines()
-                    reader = csv.DictReader(decoded)
-                    data = list(reader)
+        selected_model = request.POST.get('model')
+        if 'confirm' not in request.POST:
+            # Primeira submissão: upload do ficheiro
+            if form.is_valid() and selected_model in model_names:
+                f = request.FILES['file']
+                ext = f.name.split('.')[-1].lower()
+                if ext not in ['csv', 'json']:
+                    error = 'Invalid file extension. Only CSV or JSON allowed.'
                 else:
-                    data = json.load(f)
-                # Preview for row selection
-                if 'confirm' not in request.POST:
+                    # Leitura dos dados
+                    if ext == 'csv':
+                        decoded = f.read().decode('utf-8').splitlines()
+                        reader = csv.DictReader(decoded)
+                        data = list(reader)
+                    else:
+                        data = json.load(f)
                     preview = data
-                else:
-                    replace = form.cleaned_data.get('replace', False)
-                    selected_rows = request.POST.getlist('rows')
-                    from .models import Aluno  # Change to your target model
-                    for i, row in enumerate(data):
-                        if replace and str(i) in selected_rows:
-                            Aluno.objects.update_or_create(id=row.get('id'), defaults=row)
-                        else:
-                            Aluno.objects.get_or_create(id=row.get('id'), defaults=row)
-                    return redirect('index')
+            else:
+                error = "Invalid form or model not selected."
+        else:
+            # Segunda submissão: importação dos dados selecionados
+            preview = json.loads(request.POST.get('data_json'))
+            form = ImportFileForm(request.POST)
+            selected_model = request.POST.get('model')
+            Model = apps.get_model('data_hub', selected_model)
+            replace = form.cleaned_data.get('replace', False)
+            selected_rows = request.POST.getlist('rows')
+            for i, row in enumerate(preview):
+                clean_row = {k: v for k, v in row.items() if k}
+                if str(i) in selected_rows:
+                    if replace:
+                        Model.objects.update_or_create(id=clean_row.get('id'), defaults=clean_row)
+                    else:
+                        Model.objects.get_or_create(id=clean_row.get('id'), defaults=clean_row)
+            return redirect('index')
+
+        if preview is not None and not error:
+            # Passa os dados para o preview como JSON escondido
+            import json as pyjson
+            return render(request, 'import/import_preview.html', {
+                'form': form,
+                'data': preview,
+                'model_names': model_names,
+                'selected_model': selected_model,
+                'data_json': pyjson.dumps(preview)
+            })
+
     else:
         form = ImportFileForm()
-    if preview is not None:
-        return render(request, 'import/import_preview.html', {'form': form, 'data': preview})
-    return render(request, 'import/import.html', {'form': form, 'error': error})
-
+    return render(request, 'import/import.html', {
+        'form': form,
+        'error': error,
+        'model_names': model_names,
+        'selected_model': request.POST.get('model', '')
+    })
