@@ -122,125 +122,49 @@
     }
 </style>
 
-<div style="display: inline-block;">
-    <button class="openbtn" onclick="openNav()">☰</button>
-</div>
-
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" style="display: none;">×</a>
     <a href="{% url 'index' %}">Dashboard</a>
 
     {% if user.is_staff %}
-{% comment %} 
-    Alunos
-{% endcomment %}
         {% if user.is_superuser or perms.auth.grupo_alunos %}
             <div class="dropdown">
                 <span class="dropdown-btn">Alunos ▼</span>
                 <div class="dropdown-container">
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Alunos =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="/admin/data_hub/aluno/">Alunos</a>
-                            <a href="/admin/data_hub/aluno/add/">Adicionar Aluno</a>
-                        </div>
-                    </div>
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Salas =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="/admin/data_hub/sala/">Salas</a>
-                            <a href="/admin/data_hub/sala/add">Adicionar sala</a>
-                        </div>
-                    </div>
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">R.E. =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="/admin/data_hub/responsaveleducativo/">Responsaveis Educativos</a>
-                            <a href="/admin/data_hub/responsaveleducativo/add/">Adicionar Responsavel Educativo</a>
-                        </div>
-                    </div>
+                    <a href="/admin/data_hub/aluno/">Alunos</a>
+                    <a href="/admin/data_hub/sala/">Salas</a>
+                    <a href="/admin/data_hub/responsaveleducativo/">Responsaveis Educativos</a>
                 </div>
             </div>
         {% endif %}
-{% comment %} 
-    Financas
-{% endcomment %}
+
         {% if user.is_superuser or perms.auth.grupo_financas %}
             <div class="dropdown">
                 <span class="dropdown-btn">Finanças ▼</span>
                 <div class="dropdown-container">
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Dívidas =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="{% url 'alunos_dividas' %}">Dívidas</a>
-                        </div>
-                    </div>
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Transações =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="/admin/data_hub/transacao/">Transações</a>
-                            <a href="{% url 'registar_pagamento' %}">Registar Transação</a>
-                        </div>
-                    </div>
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Comparticipações =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="{% url 'comparticipacoes' %}">Comparticipações</a>
-                            <a href="{% url 'registar_comparticipacao' tipo_transacao=3 %}">Registar Comparticipação</a>
-                        </div>
-                    </div>
+                    <a href="{% url 'alunos_dividas' %}">Dívidas</a>
+                    <a href="/admin/data_hub/transacao/">Transações</a>
+                    <a href="{% url 'comparticipacoes' %}">Comparticipações</a>
+                    <a href="/admin/data_hub/escalaorendimento/">Escalões</a>
                     <a href="{% url 'reports' %}">Reports</a>
                 </div>
             </div>
         {% endif %}
 
-{% comment %} 
-    Admin 
-{% endcomment %}
         {% if user.is_superuser or perms.auth.grupo_admin %}
             <div class="dropdown">
                 <span class="dropdown-btn">Admin ▼</span>
                 <div class="dropdown-container"> 
-{% comment %}-------------------{% endcomment %}
+                    <a href="{% url 'admin:auth_user_changelist' %}">Utilizadores</a>
+                    <a href="{% url 'admin:auth_group_changelist' %}">Groups</a>
+                    <a href="{% url 'admin:auth_permission_changelist' %}">Permições</a>
                     <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Utilizadores =></span>
+                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Extrair =></span>
                         <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="{% url 'admin:auth_user_changelist' %}">Utilizadores</a>
-                            <a href="{% url 'admin:auth_user_add' %}">Adicionar Utilizadores</a>
+                            <a href="{% url 'import_data' %}">Importar</a>
+                            <a href="{% url 'export_json' %}">Extrair</a>
                         </div>
                     </div>
-{% comment %}-------------------{% endcomment %}
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Grupos =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="{% url 'admin:auth_group_changelist' %}">Groups</a>
-                            <a href="{% url 'admin:auth_group_add' %}">Adicionar Grupo</a>
-                        </div>
-                    </div>
-{% comment %}-------------------{% endcomment %}
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Permições =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="{% url 'admin:auth_permission_changelist' %}">Permições</a>
-                            <a href="{% url 'admin:auth_permission_add' %}">Adicionar Permissão</a>
-                        </div>
-                    </div>
-{% comment %}-------------------{% endcomment %}
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Admin =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="/admin/data_hub/tipotransacao/add/">Adicionar Tipo Transação</a>
-                        </div>
-                    </div>
-{% comment %}-------------------{% endcomment %}
-                    <div class="dropdown-submenu">
-                        <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">Json =></span>
-                        <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
-                            <a href="{% url 'import_data' %}">Import Json</a>
-                            <a href="{% url 'export_json' %}">Export Json</a>
-                        </div>
-                    </div>
-{% comment %}-------------------{% endcomment %}
                     <div class="dropdown-submenu">
                         <span class="dropdown-btn" onmouseover="openSubmenu(this)" onmouseout="closeSubmenu(this)">DB =></span>
                         <div class="dropdown-container" style="left: 100%; top: 0; min-width: 180px; display: none;">
@@ -248,18 +172,40 @@
                             <a href="{% url 'restore_backup' %}">Restaurar Backup</a>
                         </div>
                     </div>
-{% comment %}-------------------{% endcomment %}
                 </div>
             </div>
         {% endif %}
-        
+
+        <!-- NOVA SECÇÃO ADICIONAR -->
+        <div class="dropdown">
+            <span class="dropdown-btn">Adicionar ▼</span>
+            <div class="dropdown-container" style="max-height: 300px; overflow-y: auto;">
+            {% if user.is_superuser or perms.auth.grupo_alunos %}
+                <a href="/admin/data_hub/aluno/add/">Adicionar Aluno</a>
+                <a href="/admin/data_hub/sala/add">Adicionar sala</a>
+                <a href="/admin/data_hub/responsaveleducativo/add/">Adicionar Responsavel Educativo</a>
+            {% endif %}
+            {% if user.is_superuser or perms.auth.grupo_financas %}
+                <a href="{% url 'registar_pagamento' %}">Registar Transação</a>
+                <a href="{% url 'registar_comparticipacao' tipo_transacao=3 %}">Registar Comparticipação</a>
+            {% endif %}
+            {% if user.is_superuser or perms.auth.grupo_admin %}
+                <a href="{% url 'admin:auth_user_add' %}">Adicionar Utilizadores</a>
+                <a href="{% url 'admin:auth_group_add' %}">Adicionar Grupo</a>
+                <a href="{% url 'admin:auth_permission_add' %}">Adicionar Permissão</a>
+                <a href="/admin/data_hub/tipotransacao/add/">Adicionar Tipo Transação</a>
+                <a href="/admin/data_hub/escalaorendimento/add/">Adicionar Escalão</a>
+            {% endif %}
+            </div>
+        </div>
     {% endif %}
-    
+
     <span style="color: white; margin-left: auto; display: inline-block; vertical-align: middle; font-size: 18px; padding: 10px 15px;">
         {{ user.username }}
     </span>
     <a href="{% url 'logout' %}">Logout</a>
 </div>
+
 
 <script>
     function openNav() {

@@ -14,39 +14,57 @@ def calcular_rendimento_anual_bruto(responsaveis=None):
         return 0
     
 def calcular_despesas_anuais_fixas(responsaveis=None):
-    return 0
+    from .models import AlunoFinancas
+    if not responsaveis:
+        return 0
+    aluno = responsaveis.first().aluno_id
+    financas = AlunoFinancas.objects.filter(aluno_id=aluno).first()
+    return financas.despesa_anual if financas and hasattr(financas, 'despesa_anual') else 0
 
 def calcular_despesas_mensais_fixas(responsaveis=None):
-    return 0
+    from .models import AlunoFinancas
+    if not responsaveis:
+        return 0
+    aluno = responsaveis.first().aluno_id
+    
+    financas = AlunoFinancas.objects.filter(aluno_id=aluno).first()
+    return financas.renda if financas and hasattr(financas, 'despesa_anual') else 0
+
+def obter_rendimento_anual_bruto(responsaveis=None):
+    from .models import AlunoFinancas
+    if not responsaveis:
+        return 0
+    aluno = responsaveis.first().aluno_id
+    
+    financas = AlunoFinancas.objects.filter(aluno_id=aluno).first()
+    return financas.rendim_líquido if financas and hasattr(financas, 'despesa_anual') else 0
 
 def calcular_rendimento_medio_mensal_agregado(responsaveis=None):
-    return (calcular_rendimento_anual_bruto(responsaveis)/12 - calcular_despesas_anuais_fixas(responsaveis)/12 - calcular_despesas_mensais_fixas(responsaveis))/responsaveis.count() if responsaveis else 0
+    # rendimento = (calcular_rendimento_anual_bruto(responsaveis)/12 - calcular_despesas_anuais_fixas(responsaveis)/12 - calcular_despesas_mensais_fixas(responsaveis))/responsaveis.count() if responsaveis else 0
+    # if rendimento < 0:
+    rendimento = (obter_rendimento_anual_bruto(responsaveis)/12 - calcular_despesas_anuais_fixas(responsaveis)/12 - calcular_despesas_mensais_fixas(responsaveis))/responsaveis.count() if responsaveis else 0
     
-def calcular_desconto_mensalidade(responsaveis=None):
-    '''
-        Escalões de desconto:
-        - Até 600€: 50%
-        - Entre 601€ e 760€: 30%
-        - Entre 761€ e 1600€: 20%
-        - Acima de 1600€: 10%
-    '''
-    rendimento_anual = calcular_rendimento_anual_bruto(responsaveis)/12
-    if rendimento_anual <= 600:
-        return 0.5
-    elif rendimento_anual <= 760:
-        return 0.3
-    elif rendimento_anual <= 1600:
-        return 0.2
-    else:
-        return 0.1
+    return rendimento
 
+def calcular_desconto_mensalidade(aluno_id=None):
+    from .models import Aluno, EscalaoRendimento
+    aluno = Aluno.objects.get(pk=aluno_id)
+    escalao = aluno.escalao
+    if escalao is None:
+        escaloes = EscalaoRendimento.objects.all()
+        ultimo = None
+        for escalao in escaloes:
+            ultimo = escalao
+        return ultimo.percentagem_mensalidade/100
+    return escalao.percentagem_mensalidade/100
+    
 def calcular_mensalidade_aluno(id_aluno):
     from .models import Aluno, ResponsavelEducativo
     try:
         aluno = Aluno.objects.get(pk=id_aluno)
         responsaveis = ResponsavelEducativo.objects.filter(aluno_id=aluno.pk)
-        mensalidade = calcular_rendimento_medio_mensal_agregado(responsaveis=responsaveis) * (1 - calcular_desconto_mensalidade(responsaveis=responsaveis))
-        return mensalidade
+        mensalidade = float(calcular_rendimento_medio_mensal_agregado(responsaveis=responsaveis)) * float(calcular_desconto_mensalidade(aluno_id=aluno.pk))
+        return round(mensalidade, 2)
     except Aluno.DoesNotExist:
         print(f"Aluno com ID {id_aluno} não encontrado.")
         return 0
@@ -56,12 +74,56 @@ def calcular_mensalidade_aluno(id_aluno):
     except Exception as e:
         print(f"Erro ao calcular mensalidade do aluno: {e}")
         return 0
+
+def atribuir_escalao_aluno(rendimento_per_capita=None, rmmg=None, aluno_id=None):
+    from .models import Aluno, EscalaoRendimento, ResponsavelEducativo, salario_minimo
+    if aluno_id is None:
+        return None
+
+    responsaveis = ResponsavelEducativo.objects.filter(aluno_id=aluno_id)
+    if rendimento_per_capita is None:
+        rendimento_per_capita = calcular_rendimento_medio_mensal_agregado(responsaveis=responsaveis)
     
-    return 0
-    
+    if rmmg is None:
+        rmmg = salario_minimo
 
+    try:
+        aluno = Aluno.objects.get(pk=aluno_id)
+        escalaoes = EscalaoRendimento.objects.all()
+        escalao_associar = None
 
+        for escalao in escalaoes:
+            rmmg_min = float(escalao.rmmg_min) if escalao.rmmg_min is not None else None
+            rmmg_max = float(escalao.rmmg_max) if escalao.rmmg_max is not None else None
+            rendimento = float(rendimento_per_capita)
+            rmmg_float = float(rmmg)
 
+            if rmmg_min is not None and rmmg_max is not None:
+                if rmmg_min * rmmg_float <= rendimento <= rmmg_max * rmmg_float:
+                    escalao_associar = escalao
+                    break
+            elif rmmg_min is not None and rmmg_max is None:
+                if rendimento >= rmmg_min * rmmg_float:
+                    escalao_associar = escalao
+                    break
+            elif rmmg_max is not None and rmmg_min is None:
+                if rendimento <= rmmg_max * rmmg_float:
+                    escalao_associar = escalao
+                    break
+            
+        if escalao_associar:
+            aluno.escalao = escalao
+            aluno.save()
+            return escalao
+        else:
+            print("Nenhum escalão encontrado para o rendimento informado.")
+            return None
+    except Aluno.DoesNotExist:
+        print(f"Aluno com ID {aluno_id} não encontrado.")
+        return None
+    except Exception as e:
+        print(f"Erro ao atribuir escalão ao aluno: {e}")
+        return None
 
 # Calculos
 def calcular_despesas():
@@ -132,7 +194,6 @@ def calcular_pagamentos_falta_alunos(mes=None, ano=None):
     
     return saldos
             
-
 
 # Transações
 def get_tipo_transacao_default(valor):
@@ -259,11 +320,14 @@ def restore_backup(backup_filename=None):
             return
         backup_filename = sorted(backup_files)[-1]  # Pega o mais recente
     backup_path = os.path.join(backup_dir, backup_filename)
+    
     if not os.path.exists(backup_path):
         print(f"Arquivo de backup {backup_filename} não encontrado.")
         return
     try:
         shutil.copy2(backup_path, db_path)
+        os.system("python manage.py makemigrations")
+        os.system("python manage.py migrate")
         print(f"Backup restaurado de: {backup_path}")
     except Exception as e:
         print(f"Erro ao restaurar backup: {e}")

@@ -15,10 +15,10 @@ class DefaultAdmin(admin.ModelAdmin):
         super().__init__(model, admin_site)
 
 class AlunoAdmin(admin.ModelAdmin):
-    list_display = ('nome_completo', 'numero_documento', 'processo', 'saldo', 'sala_nome', 'ver_detalhes_link')
+    list_display = ('nome_completo', 'escalao_link', 'numero_documento', 'processo', 'saldo', 'sala_nome', 'pgar_mensalidade_link')
     search_fields = ('nome_proprio', 'apelido', 'numero_documento', 'processo')
     list_filter = (SaldoListFilter, 'cuidados_especias', 'sala')
-    ordering = [field.name for field in Aluno._meta.fields]
+    ordering = [field.name for field in Aluno._meta.fields if not field.primary_key]
 
     def nome_completo(self, obj):
         return f"{obj.nome_proprio} {obj.apelido}"
@@ -29,12 +29,22 @@ class AlunoAdmin(admin.ModelAdmin):
         return ", ".join([s.sala_nome for s in obj.sala_set.all()])
     sala_nome.short_description = 'Sala'
 
-    def ver_detalhes_link(self, obj):
+    def pgar_mensalidade_link(self, obj):
         valor = functions.calcular_mensalidade_aluno(obj.pk)
         url = reverse('registar_pagamento', args=[obj.pk, 4, valor])
-        return format_html('<a href="{}">{}</a>', url, functions.calcular_mensalidade_aluno(obj.pk))
-    ver_detalhes_link.short_description = 'Pagar Mensalidade'
+        return format_html('<a href="{}">{}</a>', url, valor)
+    pgar_mensalidade_link.short_description = 'Pagar Mensalidade'
     
+    def escalao_link(self, obj):
+        if obj.escalao_id is None:
+            url = functions.atribuir_escalao_aluno(aluno_id= obj.pk)
+            return format_html(
+                '<span style="color:red;"><a href="{}">Atribuir escalão</a></span>',
+                url
+            )
+        return str(obj.escalao_id)
+    escalao_link.short_description = 'Escalão'
+
 class ResponsavelEducativoAdmin(admin.ModelAdmin):
     list_display = ('nome_completo', 'numero_documento', 'telefone', 'email')
     search_fields = ('nome_proprio', 'apelido', 'numero_documento')
@@ -108,13 +118,6 @@ admin.site.register(TipoImagem, TipoImagemAdmin)
 admin.site.register(Divida, DividaAdmin)
 admin.site.register(Imagem, ImagemAdmin)
 admin.site.register(Transacao, TransacaoAdmin)
-
-class TipoTransacaoAdmin(admin.ModelAdmin):
-    list_display = ('tipo_transacao_id','tipo_transacao')
-    search_fields = ('tipo_transacao',)
-    ordering = ('tipo_transacao',)
-
-admin.site.register(TipoTransacao, TipoTransacaoAdmin)
 
 models = apps.get_models()
 for model in models:
