@@ -2,7 +2,7 @@ from django.db import models
 import datetime
 import django.utils as du
 
-salario_minimo = 760.00
+salario_minimo = 870.00
 
 class Aluno(models.Model):
     class Meta:
@@ -10,6 +10,7 @@ class Aluno(models.Model):
     aluno_id = models.AutoField(primary_key=True)
     nome_proprio = models.CharField(max_length=100, default='')
     apelido = models.CharField(max_length=250, default='')
+    escalao = models.ForeignKey('EscalaoRendimento', on_delete=models.SET_NULL, null=True, blank=True, db_column='escalao_rendimento_id')
     archive_flag = models.BooleanField(default=False)
     processo = models.CharField(max_length=150, null=True, blank=True)
     data_admissao = models.DateTimeField()
@@ -356,3 +357,20 @@ class CuidadoEspecial(models.Model):
 
     def __str__(self):
         return f"{self.problema}"
+
+class EscalaoRendimento(models.Model):
+    class Meta:
+        db_table = 'escalao_rendimento'
+    escalao_rendimento_id = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=50)  # Ex: '1.º', '2.º', etc.
+    percentagem_mensalidade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    percentagem_caf_classico_almoco = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    percentagem_caf_classico_sem_almoco = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    percentagem_caf_ext_almoco = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    percentagem_caf_ext_sem_almoco = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    percentagem_caf_conciliacao = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    rmmg_min = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    rmmg_max = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+
+    def __str__(self):
+        return f"Escalão {self.nome}"
